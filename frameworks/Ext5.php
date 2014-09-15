@@ -7,14 +7,16 @@ class Ext5 extends Base {
     protected $name         = 'ext';
     protected $defaultTheme = 'Classic';
 
-    protected function getThemeDir($path, $theme) {
-        $themeName = 'ext-theme-' . strtolower($theme);
+    private function themeToPackage($theme) {
+        return 'ext-theme-' . str_replace(' ', '-', strtolower($theme));
+    }
 
-        return $path . 'packages/' . $themeName . '/build/';
+    protected function getThemeDir($path, $theme) {
+        return $path . 'packages/' . $this->themeToPackage($theme) . '/build/';
     }
 
     protected function getCss($path, $theme) {
-        $themeName = 'ext-theme-' . strtolower($theme);
+        $themeName = $this->themeToPackage($theme);
         $themeDir  = $this->getThemeDir($path, $theme);
         $filename  = $themeDir . 'resources/' . $themeName . '-all-debug.css';
 
@@ -28,7 +30,7 @@ class Ext5 extends Base {
     }
 
     protected function getJs($path, $theme) {
-        $themeName = 'ext-theme-' . strtolower($theme);
+        $themeName = $this->themeToPackage($theme);
         $themeDir  = $this->getThemeDir($path, $theme);
         $filename  = $themeDir . $themeName . '-debug.js';
 

@@ -8,6 +8,15 @@ Can use .htaccess (rewrite) to have URLs like:
 Without htaccess, you can use URLs like:
 
     http://test/?framework=ext&version-5.0.1
+    
+You can optionally specify what theme:
+    
+    http://test/ext/5.0.1/Classic
+    http://test/touch/2.4.0/Cupertino
+    http://test/?framework=ext&version=5.0.1&theme=Neptune
+    
+For Ext JS, it will attempt to figure out the package name. It will replace spaces with hyphens, lowercase the name
+and prefix `ext-theme-` to the name. So if you pass in `Neptune Touch`, it wille resolve to `ext-theme-neptune-touch`.
 
 config.json
 ====
