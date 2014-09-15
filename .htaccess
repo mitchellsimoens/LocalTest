@@ -1,0 +1,5 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^(ext|touch)/([^/w]+)/*([^/w]*)?$ index.php?framework=$1&version=$2&theme=$3 [QSA]
+</IfModule>

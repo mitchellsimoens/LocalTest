@@ -1,0 +1,27 @@
+{
+    "path"     : "/Volumes/Data/releases/",
+    "httpPath" : "http://releases/",
+
+    "classMap" : {
+        "ext4"   : "Ext4",
+        "ext5"   : "Ext5",
+        "touch2" : "Touch2"
+    },
+
+    "aliases" : {
+        "ext"  : {
+            "5.0.1" : "5.0.1.1255",
+            "5.0.0" : "5.0.0.970",
+            "4.2.3" : "4.2.3.1477",
+            "4.2.2" : "4.2.2.1144",
+            "4.2.1" : "4.2.1.883",
+            "4.2.0" : "4.2.0.663"
+        }
+    },
+
+    "extras" : {
+        "map" : {
+            "js" : "http://maps.google.com/maps/api/js?sensor=true"
+        }
+    }
+}
