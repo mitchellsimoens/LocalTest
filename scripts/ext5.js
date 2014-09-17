@@ -38,36 +38,35 @@ Ext.require([
     'Ext.container.*'
 ]);
 
-Ext.define('MyModel', {
-    extend : 'Ext.data.Model',
-
-    fields : [
-        'firstName',
-        'lastName'
-    ]
-});
-
 Ext.application({
     name : 'Fiddle',
 
     launch : function() {
 
-        new Ext.grid.Panel({
-            plugins : 'viewport',
-            title   : 'Grid Test',
-            store   : {
-                autoLoad : true,
-                model    : 'MyModel',
-                proxy    : {
-                    type   : 'ajax',
-                    url    : 'data.json',
-                    reader : {
-                        type         : 'json',
-                        rootProperty : 'data'
-                    }
+        var store = new Ext.data.Store({
+            autoLoad : true,
+            fields   : [
+                'i', 'firstName', 'lastName'
+            ],
+            proxy    : {
+                type   : 'ajax',
+                url    : 'data.json',
+                reader : {
+                    type         : 'json',
+                    rootProperty : 'data'
                 }
-            },
+            }
+        });
+
+        new Ext.grid.Panel({
+            plugins : ['viewport'],
+            store   : store,
             columns : [
+                {
+                    text      : 'Idx',
+                    dataIndex : 'i',
+                    width     : 75
+                },
                 {
                     text      : 'First Name',
                     dataIndex : 'firstName',
@@ -78,7 +77,19 @@ Ext.application({
                     dataIndex : 'lastName',
                     flex      : 1
                 }
-            ]
+            ],
+            bbar    : {
+                xtype  : 'pagingtoolbar',
+                store  : store
+            }
+        });
+
+        Ext.Ajax.request({
+            method : 'GET',
+            url    : '/user/1',
+            callback : function(options, success, result) {
+                console.log(result.responseText);
+            }
         });
 
     }

@@ -70,6 +70,19 @@ Ext.define('MockData.endpoints.Grid', {
                     }
                 }
             }
+        },
+        'GET' : {
+            '/user/:id' : {
+                conditions : {
+                    ':id' : '([0-9]+)'
+                },
+                fn         : function(id, params) {
+                    return {
+                        id   : id,
+                        name : 'Mitch'
+                    };
+                }
+            }
         }
     }
 });

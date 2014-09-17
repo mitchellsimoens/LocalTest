@@ -138,7 +138,8 @@ Ext.define('MockData.SimXhr', {
             origFn   = endpoint.fn,
             fn       = origFn,
             data     = endpoint.data,
-            status, statusText, type, tpl;
+            regex    = endpoint.regex,
+            status, statusText, type, tpl, args;
 
         if (!Ext.isFunction(fn)) {
             status     = fn.status;
@@ -148,14 +149,24 @@ Ext.define('MockData.SimXhr', {
             fn         = fn.fn;
         }
 
+        if (regex) {
+            args = me.url.match(regex.matcherRegex).slice(1);
+        } else {
+            args = [];
+        }
+
+        delete endpoint.regex;
+
         if (!type) {
             type = endpoint.url.split('.').pop();
         }
 
         type = me.parseType(type);
 
+        args.push(me.params, origFn);
+
         if (fn) {
-            data = fn.call(endpoint.scope, me.params, origFn);
+            data = fn.apply(endpoint.scope, args);
         }
 
         me.status     = status || 200;

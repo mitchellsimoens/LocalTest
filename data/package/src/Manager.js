@@ -13,6 +13,8 @@ Ext.define('MockData.Manager', {
 
     endpoints : {},
 
+    regexs : {},
+
     register : function(method, url, fn, scope) {
         var endpoint = this.getEndpoint(method);
 
@@ -35,10 +37,28 @@ Ext.define('MockData.Manager', {
 
     getUrlConfig : function(method, url) {
         var endpoint = this.getEndpoint(method),
-            config;
+            regexs   = this.regexs,
+            config,
+            regexUrl, regex;
 
         if (endpoint) {
             config = endpoint[url];
+
+            if (!config) {
+                for (regexUrl in regexs) {
+                    regex = regexs[regexUrl];
+
+                    if (regex.matcherRegex.test(url)) {
+                        config = endpoint[regexUrl];
+
+                        if (config) {
+                            config.regex = regex;
+
+                            break;
+                        }
+                    }
+                }
+            }
 
             if (config) {
                 return config;
@@ -78,6 +98,20 @@ Ext.define('MockData.Manager', {
     },
 
     doRegister : function(endpoint, url, fn, scope) {
+        var isFnObj = Ext.isObject(fn);
+
+        if (url.indexOf(':') > -1) {
+            var paramMatchingRegex = new RegExp(/:([0-9A-Za-z\_]*)/g),
+                regex              = this.regexs[url] = {
+                    paramMatchingRegex  : paramMatchingRegex,
+                    paramsInMatchString : url.match(paramMatchingRegex) || [],
+                    conditions          : isFnObj && fn.conditions ? fn.conditions : {},
+                    caseInsensitive     : true
+                };
+
+            regex.matcherRegex = this.createMatcherRegex(url);
+        }
+
         endpoint[url] = {
             fn    : fn,
             url   : url,
@@ -160,6 +194,27 @@ Ext.define('MockData.Manager', {
         }
 
         return value;
+    },
+
+    createMatcherRegex : function(url) {
+        var regex               = this.regexs[url],
+            paramsInMatchString = regex.paramsInMatchString,
+            conditions          = regex.conditions,
+            i                   = 0,
+            len                 = paramsInMatchString.length,
+            modifiers           = regex.caseInsensitive ? 'i' : '',
+            params, cond, matcher;
+
+        for (; i < len; i++) {
+            params  = paramsInMatchString[i];
+            cond    = conditions[params];
+            matcher = cond || '([%a-zA-Z0-9\\-\\_\\s,]+)';
+
+            url = url.replace(new RegExp(params), matcher);
+        }
+
+        //we want to match the whole string, so include the anchors
+        return new RegExp('^' + url + '$', modifiers);
     }
 }, function() {
     Ext.app = Ext.app || {};
