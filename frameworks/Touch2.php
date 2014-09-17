@@ -11,7 +11,7 @@ class Touch2 extends Base {
         $themeName = str_replace(' ', '-', strtolower($theme));
         $filename  = $path . 'resources/css-debug/' . $themeName . '.css';
 
-        if (!file_exists($filename)) {
+        if (!$this->getUseCdn() && !file_exists($filename)) {
             exit('Theme not found (CSS): ' . $filename);
         }
 
@@ -21,8 +21,14 @@ class Touch2 extends Base {
     }
 
     protected function getJs($path) {
+        $filename = $path . ($this->getUseAllJs() ? 'sencha-touch-all-debug.js' : 'sencha-touch-debug.js');
+
+        if (!$this->getUseCdn() && !file_exists($filename)) {
+            exit('Theme not found (JS): ' . $filename);
+        }
+
         return array(
-            $path . 'sencha-touch-debug.js'
+            $filename
         );
     }
 

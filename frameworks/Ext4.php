@@ -20,7 +20,7 @@ class Ext4 extends Base {
         $themeDir  = $this->getThemeDir($path, $theme);
         $filename  = $themeDir . 'resources/' . $themeName . '-all-debug.css';
 
-        if (!file_exists($filename)) {
+        if (!$this->getUseCdn() && !file_exists($filename)) {
             exit('Theme not found (CSS): ' . $filename);
         }
 
@@ -34,12 +34,12 @@ class Ext4 extends Base {
         $themeDir  = $this->getThemeDir($path, $theme);
         $filename  = $themeDir . $themeName . '-debug.js';
 
-        if (!file_exists($filename)) {
+        if (!$this->getUseCdn() && !file_exists($filename)) {
             exit('Theme not found (JS): ' . $filename);
         }
 
         return array(
-            $path . 'ext-all-debug.js',
+            $path . ($this->getUseAllJs() ? 'ext-all-debug.js' : 'ext-debug.js'),
             $filename
         );
     }

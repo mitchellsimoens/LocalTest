@@ -17,7 +17,7 @@ class Base {
         $this->version = $version;
         $this->config  = $config;
 
-        if (!file_exists($this->getPathToFramework())) {
+        if (!$config->useCdn && !file_exists($this->getPathToFramework())) {
             exit('Framework directory not found: ' . $this->getPathToFramework());
         }
     }
@@ -58,6 +58,32 @@ class Base {
         return $version;
     }
 
+    public function getUseCdn() {
+        $config = $this->getConfig();
+
+        return $config->useCdn;
+    }
+
+    public function getUseAllJs() {
+        $config = $this->getConfig();
+
+        return $config->useAllJS;
+    }
+
+    public function getCdnPath() {
+        $version = $this->getRealVersion();
+        $config  = $this->getConfig();
+        $name    = $this->getName();
+        $cdn     = $config->cdn;
+        $links   = $cdn->$name;
+
+        if (isset($links->$version)) {
+            return $links->$version;
+        } else {
+            exit('CDN path not found for that version: ' . $version);
+        }
+    }
+
     public function setName($name) {
         $this->name = $name;
     }
@@ -71,11 +97,15 @@ class Base {
     }
 
     protected function getPathToFramework() {
-        $name    = $this->getName();
-        $version = $this->getRealVersion();
-        $config  = $this->getConfig();
+        if ($this->getUseCdn()) {
+            return $this->getCdnPath();
+        } else{
+            $name    = $this->getName();
+            $version = $this->getRealVersion();
+            $config  = $this->getConfig();
 
-        return $config->path . $name . '/' . $version . '/';
+            return $config->path . $name . '/' . $version . '/';
+        }
     }
 
     public function getAssets() {
