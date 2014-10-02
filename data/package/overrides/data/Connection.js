@@ -5,8 +5,12 @@ Ext.define('Override.data.Connection', {
         'MockData.Manager'
     ],
 
+    isTouch : function() {
+        return Ext.getVersion().major < 4;
+    },
+
     request : function(options) {
-        if (Ext.getVersion().major < 4) {
+        if (this.isTouch()) {
             //this is Sencha Touch 2
             return this._touchRequest(options);
         }
@@ -46,10 +50,14 @@ Ext.define('Override.data.Connection', {
             async = true; //TODO !!!!!!!!!!!!!!!!!!!!!!!
             xhr   = me.openRequest(options, requestOptions, async, username, password);
 
-            // XDR doesn't support setting any headers
-            if (!me.isXdr) {
-                headers = me.setupHeaders(xhr, options, requestOptions.data, requestOptions.params);
+            // open the request
+            if (username) {
+                xhr.open(requestOptions.method, requestOptions.url, async, username, password);
+            } else {
+                xhr.open(requestOptions.method, requestOptions.url, async);
             }
+
+            headers = me.setupHeaders(xhr, options, requestOptions.data, requestOptions.params);
 
             // create the transaction object
             request = {
@@ -98,7 +106,11 @@ Ext.define('Override.data.Connection', {
         var xhr = !options.nosim && MockData.Manager.getXhr(requestOptions.method, requestOptions.url, options, async);
 
         if (!xhr) {
-            xhr = this.callParent([options, requestOptions, async, username, password]);
+            if (this.isTouch()) {
+                xhr = this.getXhrInstance();
+            } else {
+                xhr = this.callParent([options, requestOptions, async, username, password]);
+            }
         }
 
         return xhr;
